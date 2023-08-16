@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Шаблон сайта</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" type="text/css" media="screen">
+</head>
+<body>
+<div id="content">
+  <form method="POST" enctype="multipart/form-data">
+<!-- Область около изображения -->
+	<div id="text">
+	Загрузите снимок рентгена легких в формате ".png" и нажмите кнопку "Анализ"
+	</div>
+    <div id="container">
+	    <div id="image">
+	    	<img id="previewImg" src="{{ url_for('static', filename='images/default_image.png') }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">
+            <div id="fileName"> </div>
+        </div>
+	    <div id="button">
+            <input type="file" name="file" accept=".png" style="display: none;" id="fileInput" onchange="displayPreview()">
+	    	<button type="button" onclick="document.getElementById('fileInput').click()">Загрузить</button>
+	    	<input type="submit" name="analysis" value="  Анализ  " />
+	    </div>
+    </div>
+      <!-- Добавляем таблицу -->
+    <div id="table">
+        <table>
+            <caption>{{ table_caption }}</caption>
+            <tr>
+                <td><img src="{{ url_for('static', filename='heatmaps/Atelectasis.png') }}" alt="Ячейка 1" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Cardiomegaly.png') }}" alt="Ячейка 2" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Consolidation.png') }}" alt="Ячейка 3" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Edema.png') }}" alt="Ячейка 4" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Effusion.png') }}" alt="Ячейка 5" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Emphysema.png') }}" alt="Ячейка 6" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Fibrosis.png') }}" alt="Ячейка 7" style="max-width: 100%; max-height: 100%;"></td>
+            </tr>
+            <tr>
+                <td><img src="{{ url_for('static', filename='heatmaps/Hernia.png') }}" alt="Ячейка 8" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Infiltration.png') }}" alt="Ячейка 9" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Mass.png') }}" alt="Ячейка 10" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Nodule.png') }}" alt="Ячейка 11" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Pleural_Thickening.png') }}" alt="Ячейка 12" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Pneumonia.png') }}" alt="Ячейка 13" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="{{ url_for('static', filename='heatmaps/Pneumothorax.png') }}" alt="Ячейка 14" style="max-width: 100%; max-height: 100%;"></td>
+            </tr>
+        </table>
+
+    </div>
+  </form>
+<!-- Конец области около изображения -->
+</div>
+
+<!-- Скрипты -->
+    <script>
+        function displayPreview() {
+            const input = document.getElementById('fileInput');
+            const previewImg = document.getElementById('previewImg');
+            const fileName = document.getElementById('fileName');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    fileName.textContent = input.files[0].name;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+    </script>
+<!-- Конец скриптам -->
+
+</body>
+</html>
