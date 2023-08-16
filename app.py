@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Здесь  можно обработать загруженный файл
+        # Здесь  можно обработать загруженный фай
         uploaded_file = request.files['file']
         # Читаем содержимое файла
         file_content = uploaded_file.read()
