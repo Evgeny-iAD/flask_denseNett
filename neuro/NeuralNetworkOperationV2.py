@@ -158,6 +158,7 @@ class NeuralOperation():
             filtered_predictions.append(prediction)
         return filtered_predictions
 
+
 def main(image_path, outDataDir):
     result_analysis = {}
     neural_operation = NeuralOperation()

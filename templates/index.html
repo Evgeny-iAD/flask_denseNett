@@ -21,6 +21,7 @@
 {#	    	<img id="previewImg" src="{{ url_for('static', filename='images/default_image.png') }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
 {#            <img id="previewImg" src="{{ orig_image }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
             <img id="previewImg" src="data:image/png;base64,{{ orig_image }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">
+{#            <img id="previewImg" src="{{ url_for('static', filename=temp_image_path) }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
             <div id="fileName"> </div>
         </div>
 	    <div id="button">
@@ -34,22 +35,23 @@
         <table>
             <caption>{{ table_caption }}</caption>
             <tr>
-                <td><img src="{{ url_for('static', filename='heatmaps/Atelectasis.png') }}" alt="Ячейка 1" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Cardiomegaly.png') }}" alt="Ячейка 2" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Consolidation.png') }}" alt="Ячейка 3" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Edema.png') }}" alt="Ячейка 4" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Effusion.png') }}" alt="Ячейка 5" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Emphysema.png') }}" alt="Ячейка 6" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Fibrosis.png') }}" alt="Ячейка 7" style="max-width: 100%; max-height: 100%;"></td>
+{#                <td><img src="{{ url_for('static', filename='heatmaps/Atelectasis.png') }}" alt="Ячейка 1" style="max-width: 100%; max-height: 100%;"></td>#}
+                <td><img src="data:image/png;base64,{{ atelectasis }}" alt="Ячейка 1" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ cardiomegaly }}" alt="Ячейка 2" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ effusion }}" alt="Ячейка 3" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ infiltration }}" alt="Ячейка 4" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ mass }}" alt="Ячейка 5" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ nodule }}" alt="Ячейка 6" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ pneumonia }}" alt="Ячейка 7" style="max-width: 100%; max-height: 100%;"></td>
             </tr>
             <tr>
-                <td><img src="{{ url_for('static', filename='heatmaps/Hernia.png') }}" alt="Ячейка 8" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Infiltration.png') }}" alt="Ячейка 9" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Mass.png') }}" alt="Ячейка 10" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Nodule.png') }}" alt="Ячейка 11" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Pleural_Thickening.png') }}" alt="Ячейка 12" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Pneumonia.png') }}" alt="Ячейка 13" style="max-width: 100%; max-height: 100%;"></td>
-                <td><img src="{{ url_for('static', filename='heatmaps/Pneumothorax.png') }}" alt="Ячейка 14" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ pneumothorax }}" alt="Ячейка 8" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ consolidation }}" alt="Ячейка 9" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ edema }}" alt="Ячейка 10" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ emphysema }}" alt="Ячейка 11" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ fibrosis }}" alt="Ячейка 12" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ pleural_thickening }}" alt="Ячейка 13" style="max-width: 100%; max-height: 100%;"></td>
+                <td><img src="data:image/png;base64,{{ hernia }}" alt="Ячейка 14" style="max-width: 100%; max-height: 100%;"></td>
             </tr>
         </table>
 
