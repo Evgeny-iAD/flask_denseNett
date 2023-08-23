@@ -5,7 +5,11 @@
 <title>Шаблон сайта</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
-<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" type="text/css" media="screen">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet" type="text/css" media="screen">
+    <!-- дабавление библиотек для работы DataTables -->
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
 </head>
 <body>
 <div id="content">
@@ -14,24 +18,60 @@
 	<div id="text">
 	Загрузите снимок рентгена легких в формате ".png" и нажмите кнопку "Анализ"
 	</div>
+    <div id="server-status">
+        <p>Статус доступности сервера ПАКС
+        <span id="status-icon" class="red"></span>
+        </p>
+    </div>
+    <div id="id_patient"> Id пациента в МИС: {{ patient_id }}</div>
+    <div id="status-message"></div>
     <div id="container">
-        <p> </p>
-        <div> Id пациента в МИС: {{ patient_id }}</div>
-	    <div id="image">
-{#	    	<img id="previewImg" src="{{ url_for('static', filename='images/default_image.png') }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
-{#            <img id="previewImg" src="{{ orig_image }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
-            <img id="previewImg" src="data:image/png;base64,{{ orig_image }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">
-{#            <img id="previewImg" src="{{ url_for('static', filename=temp_image_path) }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">#}
-            <div id="fileName"> </div>
-        </div>
-	    <div id="button">
+    <div id="table_study" style="display: inline-block; width: 430px; max-height: 200px; vertical-align: top; ">
+        <table id="searchResultsTable" class="display">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Дата</th>
+                        <th style="width: 200px;">ФИО пациента</th>
+                        <th style="width: 100px;">Дата рожд.</th>
+                        <th style="display: none;">Query ID</th>
+                        <th style="display: none;">Study Instance UID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for result in search_results %}
+                <tr>
+                    <td>{{ result.study_date }}</td>
+                    <td>{{ result.patient_name }}</td>
+                    <td>{{ result.patient_birth }}</td>
+                    <td style="display: none;">{{ result.query_id }}</td>
+                    <td style="display: none;">{{ result.study_instance_uid }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+        </table>
+    </div>
+        <div id="button" style="display: inline-block; background-color: #929292; width: 70px; height: 200px; vertical-align: top;">
             <input type="file" name="file" accept=".png" style="display: none;" id="fileInput" onchange="displayPreview()">
 	    	<button type="button" onclick="document.getElementById('fileInput').click()">Загрузить</button>
-	    	<input type="submit" name="analysis" value="  Анализ  " />
+            <button type="button" onclick="performSearch()">Поиск</button>
+            <button type="button" onclick="showLoadingModal();">Анализ</button>
 	    </div>
+	    <div id="image" style="display: inline-block; background-color: #333333; width: 200px; height: 200px; vertical-align: top;">
+
+            <img id="previewImg" src="{{ url_for('static', filename='/images/default_image.png') }}" alt="Превью изображения" style="max-width: 100%; max-height: 100%;">
+
+            <div id="fileName"> </div>
+        </div>
     </div>
       <!-- Добавляем таблицу -->
     <div id="table">
+
+        <div id="loading-modal" class="modal">
+            <div class="modal-content">
+            <p>Анализ изображения нейросетью ....</p>
+            </div>
+        </div>
+
         <table>
             <caption>{{ table_caption }}</caption>
             <tr>
@@ -56,28 +96,177 @@
         </table>
 
     </div>
+
+        <!-- Модальное окно -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Это модальное окно! Здесь вы можете отобразить информацию о выбранной строке.</p>
+        </div>
+    </div>
+
   </form>
 <!-- Конец области около изображения -->
 </div>
 
-<!-- Скрипты -->
-    <script>
-        function displayPreview() {
-            const input = document.getElementById('fileInput');
-            const previewImg = document.getElementById('previewImg');
-            const fileName = document.getElementById('fileName');
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- пользовательские скрипты -->
+    <!-- Скрипты таблицы данных -->
+<script>
+            $(document).ready(function() {
+                var table = $('#searchResultsTable').DataTable({
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    ordering: false,
+                    sDom: '',
+                    stripeClasses: ['even', 'odd'],
+                    border: true,
+                    headerCallback: function(thead, data, start, end, display) {
+                         $(thead).find('th').css({
+                                        'border': '1px solid #333333',
+                                        'padding': '8px',
+                                        'text-align': 'center',
+                                        'background-color': '#f2f2f2',
+                                        'font-weight': 'bold' // Например, жирный текст для заголовков
+                                                 });
+                    }
+                });
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    fileName.textContent = input.files[0].name;
-                }
-                reader.readAsDataURL(input.files[0]);
+                $('#searchResultsTable tbody').on('click', 'tr', function () {
+                    var patientName = $(this).find('td:nth-child(2)').text();
+                    var patientBirth = $(this).find('td:nth-child(3)').text();
+                    var queryId = $(this).find('td:nth-child(4)').text();
+                    var studyInstanceUid = $(this).find('td:nth-child(5)').text();
+
+                    if (patientName === 'Изображение') {
+                        // Вызов функции для загрузки изображения
+                        $.ajax({
+                            type: 'GET',
+                            url: '/upload_image_preview',
+                            data: { id: patientBirth },
+                            success: function(data) {
+                                console.log('Image Preview Data:', data);
+                                // Дополнительные действия после успешного ответа от сервера
+                                $('#previewImg').attr('src', 'data:image/png;base64,' + data.orig_image);
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    } else {
+                        // Вызов функции для перемещения изображения
+                        $.ajax({
+                            type: 'GET',
+                            url: '/move_patient_images',
+                            data: { query_id: queryId, study_instance_uid: studyInstanceUid },
+                            success: function(data) {
+                                console.log('Move Data:', data);
+                                updateSearchResultsTable(data);
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    }
+                });
+            });
+
+            function performSearch() {
+            $.ajax({
+            type: 'GET',
+            url: '/find_patient_study',
+            success: function(data) {
+                console.log('Search results:', data);
+                updateSearchResultsTable(data);
+            },
+            error: function(error) {
+                console.error('Error:', error);
             }
-        }
+             });
+            }
 
-    </script>
+            function updateSearchResultsTable(results) {
+                var tbody = document.querySelector('#searchResultsTable tbody');
+                tbody.innerHTML = ''; // Очистить текущее содержимое tbody
+
+                var columnWidths = ['100px', '200px', '100px', '0', '0'];
+
+                results.forEach(result => {
+                    var row = tbody.insertRow();
+                    var dateCell = row.insertCell(0);
+                    var nameCell = row.insertCell(1);
+                    var birthCell = row.insertCell(2);
+                    var queryCell = row.insertCell(3);
+                    var uidCell = row.insertCell(4);
+
+                    dateCell.textContent = result.study_date;
+                    nameCell.textContent = result.patient_name;
+                    birthCell.textContent = result.patient_birth;
+                    queryCell.textContent = result.query_id;
+                    uidCell.textContent = result.study_instance_uid;
+
+                    var styles = {
+                        width: columnWidths[0],
+                        border: '1px solid #333333',
+                        padding: '8px',
+                        textAlign: 'center'
+                    };
+
+                    Object.assign(dateCell.style, styles);
+                    styles.width = columnWidths[1];
+                    Object.assign(nameCell.style, styles);
+                    styles.width = columnWidths[2];
+                    Object.assign(birthCell.style, styles);
+                    styles.width = columnWidths[3];
+                    Object.assign(queryCell.style, Object.assign({ display: 'none' }, styles));
+                    styles.width = columnWidths[4];
+                    Object.assign(uidCell.style, Object.assign({ display: 'none' }, styles));
+                });
+            }
+
+</script>
+
+
+<script>
+                    function displayPreview() {
+                        const input = document.getElementById('fileInput');
+                        const previewImg = document.getElementById('previewImg');
+                        const fileName = document.getElementById('fileName');
+
+                        if (input.files && input.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImg.src = e.target.result;
+                                fileName.textContent = input.files[0].name;
+                            }
+                            reader.readAsDataURL(input.files[0]);
+                        }
+                    }
+                    function showLoadingModal() {
+                    document.getElementById('loading-modal').style.display = 'block';
+                    document.getElementById('loading-message-value').value = 'True';
+                    }
+                    function hideLoadingModal() {
+                    document.getElementById('loading-modal').style.display = 'none';
+                    }
+                    function updateServerStatus() {
+                        fetch('/check_server_status')
+                        .then(response => response.json())
+                        .then(data => {
+                            const statusIcon = document.getElementById('status-icon');
+                            statusIcon.classList.remove('red', 'green');
+                            statusIcon.classList.add(data.status_color);
+                         })
+                        .catch(error => {
+                            console.error('Error fetching server status:', error);
+                        });
+                    }
+
+                    // Вызывать функцию обновления статуса при загрузке страницы
+                    document.addEventListener('DOMContentLoaded', updateServerStatus);
+                </script>
 <!-- Конец скриптам -->
 
 </body>

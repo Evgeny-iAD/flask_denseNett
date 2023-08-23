@@ -1,13 +1,13 @@
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
 class OriginalImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.String(50), nullable=False)
-    study_id = db.Column(db.String(50))
+    query_id = db.Column(db.String)
+    study_instance_uid = db.Column(db.String(255))
     image = db.Column(db.LargeBinary, nullable=False)
-
 class AnalysisResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.String(50), nullable=False)
@@ -30,5 +30,14 @@ class AnalysisResult(db.Model):
     def __init__(self, patient_id, original_images):
         self.patient_id = patient_id
         self.original_images = original_images
+class SearchResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    query_id = db.Column(db.String)
+    study_date = db.Column(db.String(8))
+    patient_name = db.Column(db.String(255))
+    patient_birth = db.Column(db.String(8))
+    study_instance_uid = db.Column(db.String(255))
+
+
 
 
